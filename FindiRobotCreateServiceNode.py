@@ -7,9 +7,6 @@ def main():
     #Initialize Robot Raconteur
     RRN.UseNumPy=True
 
-    #Enable the TCP transport to listen for announce packets
-    t2.EnableNodeDiscoveryListening()
-
     #Wait for ten seconds for the node discovery to occur
     time.sleep(10)
 

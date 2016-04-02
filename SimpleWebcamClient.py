@@ -36,7 +36,7 @@ def main():
 
     #Show the images
     cv2.imshow(c1.Name,frame1)
-    #cv2.imshow(c2.Name,frame2)
+    cv2.imshow(c2.Name,frame2)
 
     #CV wait for key press on the image window and then destroy
     cv2.waitKey()

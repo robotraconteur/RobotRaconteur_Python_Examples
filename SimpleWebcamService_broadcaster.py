@@ -11,7 +11,7 @@ RRN=RR.RobotRaconteurNode.s
 import threading
 import numpy
 import traceback
-import cv2 as cv
+import cv2
 
 #The service definition of this service.
 webcam_servicedef="""
@@ -70,13 +70,11 @@ class Webcam_impl(object):
         self._buffer=numpy.array([],dtype="u1")
         self._multidimbuffer=numpy.array([],dtype="u1")
 
-
-
         #Initialize the camera
         with self._lock:
-            self._capture=cv.CaptureFromCAM(cameraid)
-            cv.SetCaptureProperty(self._capture,cv.CV_CAP_PROP_FRAME_WIDTH,320)
-            cv.SetCaptureProperty(self._capture,cv.CV_CAP_PROP_FRAME_HEIGHT,240)
+            self._capture=cv2.VideoCapture(cameraid)
+            self._capture.set(cv2.CAP_PROP_FRAME_WIDTH,320)
+            self._capture.set(cv2.CAP_PROP_FRAME_HEIGHT,240)
 
     #Return the camera name
     @property
@@ -87,12 +85,11 @@ class Webcam_impl(object):
     def CaptureFrame(self):
         with self._lock:
             image=RRN.NewStructure("experimental.createwebcam.WebcamImage")
-            frame1=cv.QueryFrame(self._capture)
-            frame=cv.GetMat(frame1)
-            image.width=frame.width
-            image.height=frame.height
-            image.step=frame.step
-            image.data=numpy.frombuffer(frame.tostring(),dtype="u1")
+            frame=self._capture.read()[1]
+            image.width=frame.shape[1]
+            image.height=frame.shape[0]
+            image.step=frame.shape[1]*3
+            image.data=frame.reshape(frame.size, order='C')
 
             return image
 
@@ -142,8 +139,8 @@ class Webcam_impl(object):
             #since we are using the "backlog" flow control in the broadcaster.
             self._framestream_broadcaster.AsyncSendPacket(frame,lambda: None)
 
-            #Put in a 250 ms delay
-            time.sleep(.25)
+            #Put in a 100 ms delay
+            time.sleep(.1)
 
     #Captures a frame and places the data in the memory buffers
     def CaptureFrameToBuffer(self):
