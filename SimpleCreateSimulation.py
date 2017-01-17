@@ -137,7 +137,7 @@ class CreateSim(object):
             
                 p = bytearray(struct.pack(">5BhBh2B", 19, 10, 7, self._bump, 19, dist, 20, ang, 18, 0))
                 #Checksum
-                p.append(0x100 - (np.sum(p[1:]) % 0x100))
+                p.append(int(0x100 - (np.sum(p[1:]) % 0x100)))
             
             self.Packets.fire(p)
                                         
