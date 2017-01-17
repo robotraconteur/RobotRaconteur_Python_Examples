@@ -7,7 +7,6 @@
 
 import time
 import RobotRaconteur as RR
-from matplotlib.mlab import dist
 #Convenience shorthand to the default node.
 #RRN is equivalent to RR.RobotRaconteurNode.s
 RRN=RR.RobotRaconteurNode.s
