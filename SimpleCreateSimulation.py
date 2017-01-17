@@ -109,7 +109,7 @@ class CreateSim(object):
         self._bump=0
         
     def __thread_func(self):
-        start_time=time.clock()
+        start_time=time.time()
         next_time=start_time        
         while self._running:
             
@@ -142,7 +142,7 @@ class CreateSim(object):
             self.Packets.fire(p)
                                         
             next_time+=self._dt
-            dt=next_time-time.clock()
+            dt=next_time-time.time()
             if dt > 0:
                 self._thread_event.wait(dt)         
 
@@ -362,7 +362,7 @@ class Webcam_impl(object):
     #demonstration only...
     def frame_threadfunc(self):
         
-        start_time=time.clock()
+        start_time=time.time()
         next_time=start_time
         
         #Loop as long as we are streaming
@@ -381,7 +381,7 @@ class Webcam_impl(object):
 
             #Put in a 50 ms delay
             next_time+=0.05
-            dt=next_time-time.clock()
+            dt=next_time-time.time()
             if dt > 0:
                 time.sleep(dt)
 
@@ -497,7 +497,7 @@ if __name__ == '__main__':
     RRN.RegisterService("Create","experimental.create.Create",obj)
     RRN.RegisterService("Webcam","experimental.createwebcam.WebcamHost",obj2)
     
-    start_time=time.clock()
+    start_time=time.time()
     
     while True:        
        
