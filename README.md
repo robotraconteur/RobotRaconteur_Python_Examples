@@ -34,8 +34,9 @@ SimpleCreateSimulation.py provides a simple simulation of the Create robot and w
 
 Unlike the other example services, both the Create and webcam services are run on the same node. The URLs are as follows if running on the same computer:
 
-Create: rr+tcp://localhost:62354?service=Create
-Webcam: rr+tcp://localhost:62354?service=Webcam
+Create: `rr+tcp://localhost:62354?service=Create`
+    
+Webcam: `rr+tcp://localhost:62354?service=Webcam`
 
 To run the service:
 
