@@ -11,7 +11,7 @@ RRN=RR.RobotRaconteurNode.s
 import threading
 import numpy
 import traceback
-import cv2.cv as cv
+import cv2
 
 #The service definition of this service.
 webcam_servicedef="""
@@ -74,9 +74,9 @@ class Webcam_impl(object):
 
         #Initialize the camera
         with self._lock:
-            self._capture=cv.CaptureFromCAM(cameraid)
-            cv.SetCaptureProperty(self._capture,cv.CV_CAP_PROP_FRAME_WIDTH,320)
-            cv.SetCaptureProperty(self._capture,cv.CV_CAP_PROP_FRAME_HEIGHT,240)
+            self._capture=cv2.VideoCapture(cameraid)
+            self._capture.set(cv2.CAP_PROP_FRAME_WIDTH,320)
+            self._capture.set(cv2.CAP_PROP_FRAME_HEIGHT,240)
 
     #Return the camera name
     @property
@@ -88,12 +88,13 @@ class Webcam_impl(object):
 
         with self._lock:
             image=RRN.NewStructure("experimental.createwebcam.WebcamImage")
-            frame1=cv.QueryFrame(self._capture)
-            frame=cv.GetMat(frame1)
-            image.width=frame.width
-            image.height=frame.height
-            image.step=frame.step
-            image.data=numpy.frombuffer(frame.tostring(),dtype="u1")
+            ret, frame=self._capture.read()
+            if not ret:
+                raise Exception("Could not read from webcam")
+            image.width=frame.shape[1]
+            image.height=frame.shape[0]
+            image.step=frame.shape[1]*3
+            image.data=frame.reshape(frame.size, order='C')
 
             return image
 
@@ -178,21 +179,19 @@ class Webcam_impl(object):
 
     #Captures a frame and places the data in the memory buffers
     def CaptureFrameToBuffer(self):
-
-        #Capture and image and place it into the buffer
-        image=self.CaptureFrame()
-
-        self._buffer=image.data
-        self._multidimbuffer=numpy.concatenate((image.data[2::3].reshape((image.height,image.width,1)),image.data[1::3].reshape((image.height,image.width,1)),image.data[0::3].reshape((image.height,image.width,1))),axis=2)
-
-
-
-        #Create and populate the size structure and return it
-        size=RRN.NewStructure("experimental.createwebcam.WebcamImage_size")
-        size.height=image.height
-        size.width=image.width
-        size.step=image.step
-        return size
+        with self._lock:
+            #Capture and image and place it into the buffer
+            image=self.CaptureFrame()
+    
+            self._buffer=image.data
+            self._multidimbuffer=numpy.concatenate((image.data[2::3].reshape((image.height,image.width,1)),image.data[1::3].reshape((image.height,image.width,1)),image.data[0::3].reshape((image.height,image.width,1))),axis=2)
+    
+            #Create and populate the size structure and return it
+            size=RRN.NewStructure("experimental.createwebcam.WebcamImage_size")
+            size.height=image.height
+            size.width=image.width
+            size.step=image.step
+            return size
 
     #Return the memories.  It would be better to reuse the memory objects,
     #but for simplicity return new instances when called

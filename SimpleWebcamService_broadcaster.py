@@ -85,7 +85,9 @@ class Webcam_impl(object):
     def CaptureFrame(self):
         with self._lock:
             image=RRN.NewStructure("experimental.createwebcam.WebcamImage")
-            frame=self._capture.read()[1]
+            ret, frame=self._capture.read()
+            if not ret:
+                raise Exception("Could not read from webcam")
             image.width=frame.shape[1]
             image.height=frame.shape[0]
             image.step=frame.shape[1]*3
@@ -144,21 +146,19 @@ class Webcam_impl(object):
 
     #Captures a frame and places the data in the memory buffers
     def CaptureFrameToBuffer(self):
-
-        #Capture and image and place it into the buffer
-        image=self.CaptureFrame()
-
-        self._buffer=image.data
-        self._multidimbuffer=numpy.concatenate((image.data[2::3].reshape((image.height,image.width,1)),image.data[1::3].reshape((image.height,image.width,1)),image.data[0::3].reshape((image.height,image.width,1))),axis=2)
-
-
-
-        #Create and populate the size structure and return it
-        size=RRN.NewStructure("experimental.createwebcam.WebcamImage_size")
-        size.height=image.height
-        size.width=image.width
-        size.step=image.step
-        return size
+        with self._lock:
+            #Capture and image and place it into the buffer
+            image=self.CaptureFrame()
+    
+            self._buffer=image.data
+            self._multidimbuffer=numpy.concatenate((image.data[2::3].reshape((image.height,image.width,1)),image.data[1::3].reshape((image.height,image.width,1)),image.data[0::3].reshape((image.height,image.width,1))),axis=2)
+    
+            #Create and populate the size structure and return it
+            size=RRN.NewStructure("experimental.createwebcam.WebcamImage_size")
+            size.height=image.height
+            size.width=image.width
+            size.step=image.step
+            return size
 
     #Return the memories.  It would be better to reuse the memory objects,
     #but for simplicity return new instances when called
