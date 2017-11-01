@@ -75,8 +75,8 @@ class Webcam_impl(object):
         #Initialize the camera
         with self._lock:
             self._capture=cv2.VideoCapture(cameraid)
-            self._capture.set(cv2.CAP_PROP_FRAME_WIDTH,320)
-            self._capture.set(cv2.CAP_PROP_FRAME_HEIGHT,240)
+            self._capture.set(3,320)
+            self._capture.set(4,240)
 
     #Return the camera name
     @property
