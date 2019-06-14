@@ -21,8 +21,7 @@ def main():
     if (len(sys.argv)>=2):
         url=sys.argv[1]
 
-    #Start up Robot Raconteur and connect, standard by this point
-    RRN.UseNumPy=True
+    #Start up Robot Raconteur and connect, standard by this point    
     c_host=RRN.ConnectService(url)
 
     #Use objref's to get the cameras. c_host is a "WebcamHost" type

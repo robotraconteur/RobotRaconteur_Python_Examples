@@ -14,10 +14,7 @@ def main():
     url='rr+tcp://localhost:2354?service=Create'
     if (len(sys.argv)>=2):
         url=sys.argv[1]
-
-    #Instruct Robot Raconteur to use NumPy
-    RRN.UseNumPy=True
-
+    
     #Connect to the service
     c=RRN.ConnectService(url)
 

@@ -16,8 +16,7 @@ def main():
     if (len(sys.argv)>=2):
         url=sys.argv[1]
 
-    #Initialize Robot Raconteur and connect to the iRobot Create service
-    RRN.UseNumPy=True
+    #Initialize Robot Raconteur and connect to the iRobot Create service    
     c=RRN.ConnectService(url)
 
     c.Bump += Bumped

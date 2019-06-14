@@ -1,0 +1,36 @@
+#Service to provide sample interface to webcams
+service experimental.createwebcam2
+
+option version 0.9
+
+struct WebcamImage
+    field int32 width
+    field int32 height
+    field int32 step
+    field uint8[] data
+end
+
+struct WebcamImage_size
+    field int32 width
+    field int32 height
+    field int32 step
+end
+
+object Webcam
+    property string Name [readonly]
+    function WebcamImage CaptureFrame()
+
+    function void StartStreaming()
+    function void StopStreaming()
+    pipe WebcamImage FrameStream [readonly]
+
+    function WebcamImage_size CaptureFrameToBuffer()
+    memory uint8[] buffer [readonly]
+    memory uint8[*] multidimbuffer [readonly]
+
+end
+
+object WebcamHost
+    property string{int32} WebcamNames [readonly]
+    objref Webcam{int32} Webcams
+end

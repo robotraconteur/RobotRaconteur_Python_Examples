@@ -15,47 +15,11 @@ import sys
 #Port names and NodeID of this service
 serial_port_name="/dev/ttyUSB0"
 
-#The service definition of this service.
-create_servicedef="""
-#Service to provide sample interface to the iRobot Create
-service experimental.create
-
-option version 0.5
-
-struct SensorPacket
-    field uint8 ID
-    field uint8[] Data
-end struct
-
-object Create
-    option constant int16 DRIVE_STRAIGHT 32767
-    option constant int16 SPIN_CLOCKWISE -1
-    option constant int16 SPIN_COUNTERCLOCKWISE 1
-
-    function void Drive(int16 velocity, int16 radius)
-
-    function void StartStreaming()
-    function void StopStreaming()
-
-    property int32 DistanceTraveled
-    property int32 AngleTraveled
-    property uint8 Bumpers
-
-    event Bump()
-
-    wire SensorPacket packets
-
-    callback uint8[] play_callback(int32 DistanceTraveled, int32 AngleTraveled)
-
-end object
-"""
-
 class Create_impl(object):
     def __init__(self):
         self.Bump=RR.EventHook()
         self._lock=threading.RLock()
-        self._recv_lock=threading.RLock()
-        self._packets=None
+        self._recv_lock=threading.RLock()        
         self._play_callback=None
         self._connected_wires=dict()
 
@@ -109,25 +73,7 @@ class Create_impl(object):
     @property
     def Bumpers(self):
         return self._Bumpers
-
-    @property
-    def packets(self):
-        return self._packets
-    @packets.setter
-    def packets(self,value):
-        self._packets=value
-        #Set the wire connect callback for the wire server
-        self._packets.WireConnectCallback=self._packet_wire_connected
-
-    #Add connected wire to list.  You can also request an event when InValue
-    #changes here
-    def _packet_wire_connected(self,wire):
-        self._connected_wires[wire.Endpoint]=wire
-        #If you also want value changed event updates:
-        #wire.WireValueChanged+=self.value_changed_callback
-        #See client for usage example
-
-
+    
     @property
     def play_callback(self):
         return self._play_callback;
@@ -241,21 +187,13 @@ class Create_impl(object):
         #Pack the data into the structure to send to the lient
         data=numpy.frombuffer(packets,dtype='u1')
         #Create the new structure using the "NewStructure" function
-        strt=RRN.NewStructure('experimental.create.SensorPacket')
+        strt=RRN.NewStructure('experimental.create2.SensorPacket')
         #Set the data
         strt.ID=seed
         strt.Data=data
 
-        #Iterate over all connected wires and set the OutValue
-        eps=self._connected_wires.keys()
-        for ep in eps:
-            try:
-                wire=self._connected_wires[ep]
-                wire.OutValue=strt
-            except:
-                #If there is an error assume the wire has disconnected
-                del(self._connected_wires[ep])
-
+        #Set the OutValue for the broadcaster
+        self._packets.OutValue=strt
 
     #Fire the bump event, all connected clients will receive
     def _fire_Bump(self):
@@ -282,9 +220,6 @@ class Create_impl(object):
 
 def main():
 
-    #Enable numpy
-    RRN.UseNumPy=True
-
     #Initialize the object in the service
     obj=Create_impl()
 
@@ -295,36 +230,17 @@ def main():
 
     obj.Init(port)
 
-    #Create Local transport, start server as name, and register it
-    t1=RR.LocalTransport()
-    t1.StartServerAsNodeName("experimental.create.Create")
-    RRN.RegisterTransport(t1)
-
-    #Create the transport, register it, and start the server
-    t2=RR.TcpTransport()
-    RRN.RegisterTransport(t2)
-    t2.StartServer(2354) #random port, any unused port is fine
-
-    #Attempt to load a TLS certificate
-    try:
-        t2.LoadTlsNodeCertificate()
-    except:
-        print "warning: could not load TLS certificate"
-
-    t2.EnableNodeAnnounce()
-
-    #Register the service type and the service
-    RRN.RegisterServiceType(create_servicedef)
-    RRN.RegisterService("Create","experimental.create.Create",obj)
-
-    #Wait for the user to stop the server
-    raw_input("Server started, press enter to quit...")
-
-    #Shutdown
-    obj.Shutdown()
-
-    #You MUST shutdown or risk segfault...
-    RRN.Shutdown()
+    with RR.ServerNodeSetup("experimental.create2.Create",2354):
+    
+        #Register the service type and the service
+        RRN.RobotRaconteurNode.s.RegisterServiceTypeFromFile("experimental.create2")
+        RRN.RegisterService("Create","experimental.create.Create",obj)
+    
+        #Wait for the user to stop the server
+        raw_input("Server started, press enter to quit...")
+    
+        #Shutdown
+        obj.Shutdown()
 
 if __name__ == '__main__':
     main()

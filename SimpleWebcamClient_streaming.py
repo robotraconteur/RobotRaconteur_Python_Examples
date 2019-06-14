@@ -26,8 +26,7 @@ def main():
     if (len(sys.argv)>=2):
         url=sys.argv[1]
 
-    #Startup, connect, and pull out the camera from the objref
-    RRN.UseNumPy=True
+    #Startup, connect, and pull out the camera from the objref    
     c_host=RRN.ConnectService(url)
 
     c=c_host.get_Webcams(0)

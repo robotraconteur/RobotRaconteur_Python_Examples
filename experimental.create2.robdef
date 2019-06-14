@@ -1,0 +1,31 @@
+﻿
+#Service to provide sample interface to the iRobot Create
+service experimental.create2
+
+option version 0.9
+
+struct SensorPacket
+	field uint8 ID
+	field uint8[] Data
+end
+
+object Create
+	constant int16 DRIVE_STRAIGHT 32767
+	constant int16 SPIN_CLOCKWISE -1
+	constant int16 SPIN_COUNTERCLOCKWISE 1 
+
+	function void Drive(int16 velocity, int16 radius)
+	
+	function void StartStreaming()
+	function void StopStreaming()
+
+	property int32 DistanceTraveled [readonly]
+	property int32 AngleTraveled [readonly]
+	property uint8 Bumpers [readonly]
+
+	event Bump()
+
+	wire SensorPacket packets [readonly]
+	
+	callback uint8[] play_callback(int32 DistanceTraveled, int32 AngleTraveled)		
+end

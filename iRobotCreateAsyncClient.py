@@ -60,9 +60,7 @@ class AsyncCreateClient(object):
 
 
 def main():
-
-    RRN.UseNumPy=True
-
+    
     c=AsyncCreateClient(client_handler)
     c.start()
 

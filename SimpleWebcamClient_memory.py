@@ -17,7 +17,6 @@ def main():
         url=sys.argv[1]
 
     #Start up Robot Raconteur and connect, standard by this point
-    RRN.UseNumPy=True
     c_host=RRN.ConnectService(url)
 
     c1=c_host.get_Webcams(0)

@@ -4,9 +4,7 @@ from RobotRaconteur.Client import *
 import time
 
 def main():
-    #Initialize Robot Raconteur
-    RRN.UseNumPy=True
-
+    
     #Wait for ten seconds for the node discovery to occur
     time.sleep(10)
 

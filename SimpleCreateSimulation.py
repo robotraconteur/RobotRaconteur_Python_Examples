@@ -17,80 +17,6 @@ import sys
 import cv2
 import struct
 
-#The service definition of this service.
-create_servicedef="""
-#Service to provide sample interface to the iRobot Create
-service experimental.create
-
-option version 0.5
-
-struct SensorPacket
-    field uint8 ID
-    field uint8[] Data
-end struct
-
-object Create
-    option constant int16 DRIVE_STRAIGHT 32767
-    option constant int16 SPIN_CLOCKWISE -1
-    option constant int16 SPIN_COUNTERCLOCKWISE 1
-
-    function void Drive(int16 velocity, int16 radius)
-
-    function void StartStreaming()
-    function void StopStreaming()
-
-    property int32 DistanceTraveled
-    property int32 AngleTraveled
-    property uint8 Bumpers
-
-    event Bump()
-
-    wire SensorPacket packets
-
-    callback uint8[] play_callback(int32 DistanceTraveled, int32 AngleTraveled)
-
-end object
-"""
-
-webcam_servicedef="""
-#Service to provide sample interface to webcams
-service experimental.createwebcam
-
-option version 0.5
-
-struct WebcamImage
-    field int32 width
-    field int32 height
-    field int32 step
-    field uint8[] data
-end struct
-
-struct WebcamImage_size
-    field int32 width
-    field int32 height
-    field int32 step
-end struct
-
-object Webcam
-    property string Name
-    function WebcamImage CaptureFrame()
-
-    function void StartStreaming()
-    function void StopStreaming()
-    pipe WebcamImage FrameStream
-
-    function WebcamImage_size CaptureFrameToBuffer()
-    memory uint8[] buffer
-    memory uint8[*] multidimbuffer
-
-end object
-
-object WebcamHost
-    property string{int32} WebcamNames
-    objref Webcam{int32} Webcams
-end object
-"""
-
 class CreateSim(object):
     
     def __init__(self):
@@ -272,7 +198,7 @@ class Create_impl(object):
         #Pack the data into the structure to send to the client
         data=np.frombuffer(packets,dtype='u1')
         #Create the new structure using the "NewStructure" function
-        strt=RRN.NewStructure('experimental.create.SensorPacket')
+        strt=RRN.NewStructure('experimental.create2.SensorPacket')
         #Set the data
         strt.ID=seed
         strt.Data=data
@@ -318,7 +244,7 @@ class Webcam_impl(object):
     #Capture a frame and return a WebcamImage structure to the client
     def CaptureFrame(self):
         with self._lock:
-            image=RRN.NewStructure("experimental.createwebcam.WebcamImage")
+            image=RRN.NewStructure("experimental.createwebcam2.WebcamImage")
             frame=self._host.sim.get_image()
             if self._cameraid > 0:
                 frame=cv2.flip(frame,1)
@@ -397,7 +323,7 @@ class Webcam_impl(object):
 
 
         #Create and populate the size structure and return it
-        size=RRN.NewStructure("experimental.createwebcam.WebcamImage_size")
+        size=RRN.NewStructure("experimental.createwebcam2.WebcamImage_size")
         size.height=image.height
         size.width=image.width
         size.step=image.step
@@ -449,7 +375,7 @@ class WebcamHost_impl(object):
         int_ind=int(ind)
 
         #Return the object and the Robot Raconteur type of the object
-        return self._cams[int_ind], "experimental.createwebcam.Webcam"
+        return self._cams[int_ind], "experimental.createwebcam2.Webcam"
 
     #Shutdown all the webcams
     def Shutdown(self):
@@ -457,8 +383,6 @@ class WebcamHost_impl(object):
             cam.Shutdown()
 
 if __name__ == '__main__':
-    
-    RRN.UseNumPy=True
     
     theta=0.0
     x=0.0
@@ -473,45 +397,28 @@ if __name__ == '__main__':
     camera_names=[(0,"Left"),(1,"Right")]
     obj2=WebcamHost_impl(camera_names,create)
     
-    #Create Local transport, start server as name, and register it
-    t1=RR.LocalTransport()
-    t1.StartServerAsNodeName("experimental.createsimulation")
-    RRN.RegisterTransport(t1)
-
-    #Create the transport, register it, and start the server
-    t2=RR.TcpTransport()
-    RRN.RegisterTransport(t2)
-    t2.StartServer(62354) #random port, any unused port is fine
-
-    #Attempt to load a TLS certificate
-    try:
-        t2.LoadTlsNodeCertificate()
-    except:
-        print "warning: could not load TLS certificate"
-
-    t2.EnableNodeAnnounce()
-
-    #Register the service type and the service
-    RRN.RegisterServiceType(create_servicedef)
-    RRN.RegisterServiceType(webcam_servicedef)
-    RRN.RegisterService("Create","experimental.create.Create",obj)
-    RRN.RegisterService("Webcam","experimental.createwebcam.WebcamHost",obj2)
+    with RR.ServerNodeSetup("experimental.createsimulation2",62354):
     
-    start_time=time.time()
     
-    while True:        
-       
-        img=create.get_image()
+        #Register the service type and the service
+        RRN.RegisterServiceTypeFromFile("experimental.createwebcam2")
+        RRN.RegisterServiceTypeFromFile("experimental.create2")
+        RRN.RegisterService("Create","experimental.create2.Create",obj)
+        RRN.RegisterService("Webcam","experimental.createwebcam2.WebcamHost",obj2)
         
-        if cv2.getWindowProperty('Simple Create Simulation',0) < 0:
-            break
-        cv2.imshow('Simple Create Simulation', img)
-        if cv2.waitKey(25) != -1:
-            break        
-       
+        start_time=time.time()
         
-    cv2.destroyAllWindows()
-    
-    create.stop_sim()
-    
-    RRN.Shutdown()
+        while True:        
+           
+            img=create.get_image()
+            
+            if cv2.getWindowProperty('Simple Create Simulation',0) < 0:
+                break
+            cv2.imshow('Simple Create Simulation', img)
+            if cv2.waitKey(25) != -1:
+                break        
+           
+            
+        cv2.destroyAllWindows()
+        
+        create.stop_sim()
