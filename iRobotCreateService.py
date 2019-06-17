@@ -193,7 +193,7 @@ class Create_impl(object):
         strt.Data=data
 
         #Set the OutValue for the broadcaster
-        self._packets.OutValue=strt
+        self.packets.OutValue=strt
 
     #Fire the bump event, all connected clients will receive
     def _fire_Bump(self):
