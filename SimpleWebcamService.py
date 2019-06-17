@@ -97,7 +97,7 @@ class Webcam_impl(object):
             #Send the new frame to the broadcaster.  Use AsyncSendPacket
             #and a blank handler.  We really don't care when the send finishes
             #since we are using the "backlog" flow control in the broadcaster.
-            self.framestream.AsyncSendPacket(frame,lambda: None)
+            self._framestream_broadcaster.AsyncSendPacket(frame,lambda: None)
 
             #Put in a 100 ms delay
             time.sleep(.1)
