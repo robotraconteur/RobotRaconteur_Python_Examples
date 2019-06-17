@@ -233,8 +233,8 @@ def main():
     with RR.ServerNodeSetup("experimental.create2.Create",2354):
     
         #Register the service type and the service
-        RRN.RobotRaconteurNode.s.RegisterServiceTypeFromFile("experimental.create2")
-        RRN.RegisterService("Create","experimental.create.Create",obj)
+        RRN.RegisterServiceTypeFromFile("experimental.create2")
+        RRN.RegisterService("Create","experimental.create2.Create",obj)
     
         #Wait for the user to stop the server
         raw_input("Server started, press enter to quit...")
