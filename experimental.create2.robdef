@@ -2,7 +2,7 @@
 #Service to provide sample interface to the iRobot Create
 service experimental.create2
 
-option version 0.9
+stdver 0.9
 
 struct SensorPacket
 	field uint8 ID

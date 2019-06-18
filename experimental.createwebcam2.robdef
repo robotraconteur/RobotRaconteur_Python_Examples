@@ -1,7 +1,7 @@
 #Service to provide sample interface to webcams
 service experimental.createwebcam2
 
-option version 0.9
+stdver 0.9
 
 struct WebcamImage
     field int32 width
