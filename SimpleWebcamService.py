@@ -12,6 +12,8 @@ import threading
 import numpy
 import traceback
 import cv2
+import platform
+import sys
 
 #Class that implements a single webcam
 class Webcam_impl(object):
@@ -30,7 +32,10 @@ class Webcam_impl(object):
 
         #Initialize the camera
         with self._lock:
-            self._capture=cv2.VideoCapture(cameraid)
+            if platform.system() == "Windows":
+                self._capture=cv2.VideoCapture(cameraid + cv2.CAP_DSHOW)
+            else:
+                self._capture=cv2.VideoCapture(cameraid)
             self._capture.set(3,320)
             self._capture.set(4,240)
 
@@ -188,7 +193,10 @@ def main():
         c1.CaptureFrameToBuffer()
     
         #Wait for the user to shutdown the service
-        raw_input("Server started, press enter to quit...")
+        if (sys.version_info > (3, 0)):
+            input("Server started, press enter to quit...")
+        else:
+            raw_input("Server started, press enter to quit...")
     
         #Shutdown
         obj.Shutdown()    

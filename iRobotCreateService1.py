@@ -2,10 +2,9 @@ import serial
 import struct
 import time
 import RobotRaconteur as RR
-import thread
 import threading
 
-serial_port_name="/dev/ttyUSB0"
+serial_port_name="COM4"
 
 class Create_impl(object):
 	def __init__(self):
@@ -38,7 +37,7 @@ class Create_impl(object):
 		return 0;
 
 	def Init(self,port):
-		self._serial=serial.Serial(port="/dev/ttyUSB0",baudrate=57600)
+		self._serial=serial.Serial(port=serial_port_name,baudrate=57600)
 		dat=struct.pack(">2B",128,131)
 		self._serial.write(dat)
 		
@@ -52,7 +51,7 @@ def main():
 	obj.Init(serial_port_name)
 	
 	#Drive a bit to show that it works
-	obj.Drive(200,1000)
+	obj.Drive(2000,1000)
 	time.sleep(1)
 	obj.Drive(0,0)
 	

@@ -1,6 +1,5 @@
 from RobotRaconteur.Client import *
 import time
-import thread
 import numpy
 import threading
 import sys
@@ -67,9 +66,9 @@ def main():
     ev.wait()
 
     if (err is None):
-        print "No error occured!"
+        print("No error occured!")
     else:
-        print "Error occured: " + repr(err)
+        print("Error occured: " + repr(err))
 
 if __name__ == '__main__':
     main()

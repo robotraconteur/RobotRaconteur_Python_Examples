@@ -156,7 +156,7 @@ class Create_impl(object):
                         self._DistanceTraveled+=struct.unpack(">h",distbytes)[0]
                         readpos+=2
                     except:
-                        print struct.unpack("%sB" % len(packets),packets)
+                        print(struct.unpack("%sB" % len(packets),packets))
                         raise
 
                 #Handle angle packets
@@ -237,7 +237,10 @@ def main():
         RRN.RegisterService("Create","experimental.create2.Create",obj)
     
         #Wait for the user to stop the server
-        raw_input("Server started, press enter to quit...")
+        if (sys.version_info > (3, 0)):
+            input("Server started, press enter to quit...")
+        else:
+            raw_input("Server started, press enter to quit...")
     
         #Shutdown
         obj.Shutdown()

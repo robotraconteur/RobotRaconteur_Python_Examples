@@ -6,7 +6,6 @@
 from RobotRaconteur.Client import *
 
 import time
-import thread
 import numpy
 import cv2
 import sys

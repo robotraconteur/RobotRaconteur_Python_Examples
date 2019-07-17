@@ -4,7 +4,6 @@
 
 from RobotRaconteur.Client import *
 import time
-import thread
 import numpy
 import cv2
 import sys
@@ -12,7 +11,7 @@ import sys
 #Main program
 def main():
 
-    url='rr+tcp://localhost:2355?service=Webcam'
+    url='rr+tcp://localhost:62354?service=Webcam'
     if (len(sys.argv)>=2):
         url=sys.argv[1]
 
@@ -36,7 +35,7 @@ def main():
 
     #Read segment from the "multidimbuffer" and display the "red" channel
     bufsize=c1.multidimbuffer.Dimensions
-    print bufsize
+    print(bufsize)
 
     #create a smaller buffer with 1 channel
     segdata=numpy.zeros([100,100,1],dtype="u1")

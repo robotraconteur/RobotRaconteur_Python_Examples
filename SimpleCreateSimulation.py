@@ -61,7 +61,7 @@ class CreateSim(object):
                 else:
                     self._bump = 3
             
-                p = bytearray(struct.pack(">5BhBh2B", 19, 10, 7, self._bump, 19, dist, 20, ang, 18, 0))
+                p = bytearray(struct.pack(">5BhBh2B", 19, 10, 7, self._bump, 19, int(dist), 20, int(ang), 18, 0))
                 #Checksum
                 p.append(int(0x100 - (np.sum(p[1:]) % 0x100)))
             
@@ -158,7 +158,7 @@ class Create_impl(object):
         with self._mylock:
             if not self._streaming:
                 return
-            (bump, dist, ang, buttons)=struct.unpack('>3xBxhxhxBx',str(p))
+            (bump, dist, ang, buttons)=struct.unpack('>3xBxhxhxBx',bytearray(p))
             #print [bump, dist, ang, buttons]
             
             if (bump !=0 and self._Bumpers == 0):

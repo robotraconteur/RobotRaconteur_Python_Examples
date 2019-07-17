@@ -9,12 +9,12 @@ def main():
     time.sleep(10)
 
     #Find the node
-    res=RRN.FindServiceByType("experimental.create.Create",["rr+local","rr+tcp"])
+    res=RRN.FindServiceByType("experimental.create2.Create",["rr+local","rr+tcp"])
     for r in res:
-        print r.NodeName + " " + str(r.NodeID) + " " +  r.Name + " " + r.ConnectionURL[0]
+        print(r.NodeName + " " + str(r.NodeID) + " " +  r.Name + " " + r.ConnectionURL[0])
 
     if (len(res)==0):
-        print "No Create robot found!"
+        print("No Create robot found!")
     else:
         #Connect and drive a bit, then disconnect
         c=RRN.ConnectService(res[0].ConnectionURL)

@@ -7,11 +7,11 @@ import sys
 
 #Function to call when "Bump" event occurs
 def Bumped():
-    print "Bump!!"
+    print("Bump!!")
 
 def main():
 
-    url='rr+tcp://localhost:2354?service=Create'
+    url='rr+tcp://localhost:62354?service=Create'
     if (len(sys.argv)>=2):
         url=sys.argv[1]
     
@@ -48,7 +48,7 @@ def wire_changed(w,value,time):
     val=w.InValue
     #Print the new value to the console.  Comment out this line
     #to see the other output more clearly
-    print val.Data
+    print (val.Data)
 
 #Callback for when the play button is pressed on the Create
 def play_callback(dist,angle):

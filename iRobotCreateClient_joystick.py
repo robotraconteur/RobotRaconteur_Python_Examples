@@ -2,13 +2,17 @@
 
 from RobotRaconteur.Client import *
 import time
-import thread
 import numpy
 import pygame
 import sys
 
+if (sys.version_info > (3, 0)):
+    def cmp(x, y):
+        return (x > y) - (x < y)
+    
+
 def Bumped():
-    print "Bump!!"
+    print("Bump!!")
 
 def main():
 
