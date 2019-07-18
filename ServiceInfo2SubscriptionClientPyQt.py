@@ -46,9 +46,11 @@ class RobotClient(QObject):
         self.detected_nodes_updated.connect(self.update_subscriber_window)
     
     def run(self):
-        robot_url, webcam_url = self.subscriber_window()
-        if (robot_url is None and webcam_url is None):
-            return
+        #robot_url, webcam_url = self.subscriber_window()
+        #if (robot_url is None and webcam_url is None):
+        #    return
+        
+        self.drive_window()
     
     def service_detected(self, subscription, client_id, client_info):
         self.detected_nodes_updated.emit()
@@ -154,6 +156,36 @@ class RobotClient(QObject):
         self.robot_list_widget = None
                 
         return None,None
+    
+    def drive_window(self):
+    
+        w = QWidget()
+        w.resize(850,500)
+        
+        img = cv2.imread(r'c:\Users\wasonj\Pictures\IMG_1048.jpg')
+        
+        image_label = QLabel()
+        
+        vbox = QVBoxLayout()
+        vbox.addWidget(image_label)        
+        w.setLayout(vbox)
+        
+        height, width, channel = img.shape
+        bytesPerLine = 3 * width
+        pixmap1 = QPixmap(QImage(img.data, width, height, bytesPerLine, QImage.Format_RGB888).rgbSwapped())
+        pixmap2 = pixmap1.scaledToHeight(480)
+        
+        image_label.setPixmap(pixmap2)        
+        image_label.setAlignment(Qt.AlignCenter | Qt.AlignTop)
+        
+        w.show()
+        
+        
+        
+        self.app.exec_()
+        
+        
+        
     
     def drive(self,robot,webcam):
                         
