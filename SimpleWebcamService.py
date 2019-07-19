@@ -14,6 +14,7 @@ import traceback
 import cv2
 import platform
 import sys
+import argparse
 
 #Class that implements a single webcam
 class Webcam_impl(object):
@@ -172,19 +173,32 @@ class WebcamHost_impl(object):
 
     #Shutdown all the webcams
     def Shutdown(self):
-        for cam in self._cams.itervalues():
+        for cam in self._cams.values():
             cam.Shutdown()
 
 
 
 def main():
 
+    #Accept the names of the webcams and the nodename from command line
+            
+    parser = argparse.ArgumentParser(description="Example Robot Raconteur webcam service")
+    parser.add_argument("--camera-names",type=str,help="List of camera names separated with commas")
+    parser.add_argument("--nodename",type=str,default="experimental.createwebcam2.WebcamHost",help="The NodeName to use")
+    parser.add_argument("--tcp-port",type=int,default=2355,help="The listen TCP port")
+    args = parser.parse_args()
+
     #Initialize the webcam host root object
     camera_names=[(0,"Left"),(1,"Right")]
+    if args.camera_names is not None:
+        camera_names_split=list(filter(None,args.camera_names.split(',')))
+        assert(len(camera_names_split) > 0)
+        camera_names = [(i,camera_names_split[i]) for i in range(len(camera_names_split))]
+        
+        
     obj=WebcamHost_impl(camera_names)
-
-
-    with RR.ServerNodeSetup("experimental.createwebcam2.WebcamHost",2355):    
+    
+    with RR.ServerNodeSetup(args.nodename,args.tcp_port):
 
         RRN.RegisterServiceTypeFromFile("experimental.createwebcam2")
         RRN.RegisterService("Webcam","experimental.createwebcam2.WebcamHost",obj)

@@ -11,6 +11,7 @@ import threading
 import numpy
 import traceback
 import sys
+import argparse
 
 #Port names and NodeID of this service
 serial_port_name="/dev/ttyUSB0"
@@ -220,17 +221,19 @@ class Create_impl(object):
 
 def main():
 
+    #Accept the names of the nodename and port from command line
+    parser = argparse.ArgumentParser(description="Example Robot Raconteur iRobot Create service")    
+    parser.add_argument("--nodename",type=str,default="experimental.create2.Create",help="The NodeName to use")
+    parser.add_argument("--serialport",type=str,default=serial_port_name,help="The serial port to use")
+    parser.add_argument("--tcp-port",type=int,default=2354,help="The listen TCP port")
+    args = parser.parse_args()
+
     #Initialize the object in the service
     obj=Create_impl()
 
-    if (len(sys.argv) >=2):
-        port=sys.argv[1]
-    else:
-        port=serial_port_name
-
-    obj.Init(port)
-
-    with RR.ServerNodeSetup("experimental.create2.Create",2354):
+    obj.Init(args.serialport)
+    
+    with RR.ServerNodeSetup(args.nodename,args.tcp_port):
     
         #Register the service type and the service
         RRN.RegisterServiceTypeFromFile("experimental.create2")
