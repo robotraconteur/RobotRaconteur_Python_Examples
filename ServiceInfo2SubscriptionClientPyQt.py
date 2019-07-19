@@ -4,9 +4,9 @@
 import time
 import pygame
 import sys
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
+from PySide2.QtWidgets import *
+from PySide2.QtGui import *
+from PySide2.QtCore import *
 from RobotRaconteur.Client import *
 import traceback
 import threading
@@ -19,8 +19,8 @@ if (sys.version_info > (3, 0)):
    
 class RobotClient(QObject):
     
-    detected_nodes_updated = pyqtSignal()
-    drive_error = pyqtSignal()
+    detected_nodes_updated = Signal()
+    drive_error = Signal()
     
     def __init__(self, app):
         super(RobotClient,self).__init__(app)       
@@ -123,7 +123,7 @@ class RobotClient(QObject):
         vbox.addWidget(select_button_widget)
         w.setLayout(vbox)
         
-        w.setWindowTitle("Available robots")
+        w.setWindowTitle("Available Robots")
                             
         robot_selected=False
         robot_service_info=None
@@ -236,6 +236,7 @@ class RobotClient(QObject):
         try:
             w = QWidget()
             w.resize(850,500)
+            w.setWindowTitle("Control Robot")
             
             image_label = QLabel()
             close_button_widget = QPushButton("Close")
