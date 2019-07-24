@@ -226,6 +226,7 @@ def main():
     parser.add_argument("--nodename",type=str,default="experimental.create2.Create",help="The NodeName to use")
     parser.add_argument("--serialport",type=str,default=serial_port_name,help="The serial port to use")
     parser.add_argument("--tcp-port",type=int,default=2354,help="The listen TCP port")
+    parser.add_argument("--wait-signal",action='store_const',const=True,default=False)
     args = parser.parse_args()
 
     #Initialize the object in the service
@@ -239,11 +240,17 @@ def main():
         RRN.RegisterServiceTypeFromFile("experimental.create2")
         RRN.RegisterService("Create","experimental.create2.Create",obj)
     
-        #Wait for the user to stop the server
-        if (sys.version_info > (3, 0)):
-            input("Server started, press enter to quit...")
+        if args.wait_signal:  
+            #Wait for shutdown signal if running in service mode          
+            print("Press Ctrl-C to quit...")
+            import signal
+            signal.sigwait([signal.SIGTERM,signal.SIGINT])
         else:
-            raw_input("Server started, press enter to quit...")
+            #Wait for the user to shutdown the service
+            if (sys.version_info > (3, 0)):
+                input("Server started, press enter to quit...")
+            else:
+                raw_input("Server started, press enter to quit...")
     
         #Shutdown
         obj.Shutdown()
