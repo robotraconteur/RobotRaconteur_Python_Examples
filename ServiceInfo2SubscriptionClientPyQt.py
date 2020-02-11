@@ -107,6 +107,7 @@ class RobotClient(QObject):
                 
         robot_list_widget = QListWidget()
         select_button_widget = QPushButton("Select Robot")
+        rescan_button_widget = QPushButton("Rescan")
         robot_info = QLabel()
         robot_info.setFixedHeight(200)
         robot_info_font = robot_info.font()
@@ -118,9 +119,10 @@ class RobotClient(QObject):
         robot_info.setAlignment(Qt.AlignLeft | Qt.AlignTop)
         
         vbox = QVBoxLayout()
-        vbox.addWidget(robot_list_widget)        
+        vbox.addWidget(robot_list_widget)
         vbox.addWidget(robot_info)
         vbox.addWidget(select_button_widget)
+        vbox.addWidget(rescan_button_widget)
         w.setLayout(vbox)
         
         w.setWindowTitle("Available Robots")
@@ -177,7 +179,11 @@ class RobotClient(QObject):
             except:
                 traceback.print_exc()
         
+        def rescan():
+            RRN.UpdateDetectedNodes(['rr+tcp','rrs+tcp','rr+quic'])
+
         select_button_widget.clicked.connect(select_button_pressed)
+        rescan_button_widget.clicked.connect(rescan)
         robot_list_widget.itemDoubleClicked.connect(item_selected)
         robot_list_widget.itemSelectionChanged.connect(selection_changed)
         
