@@ -128,7 +128,8 @@ class CreateSim(object):
         R=np.matrix([[c1,s1],[-s1,c1]])    
         
         def t(p1):
-            return tuple(((p+R*((p1[0],),(p1[1],))))[:,0].astype(int))
+            p2 = (p+R*((p1[0],),(p1[1],)))
+            return (int(p2[0,0]), int(p2[1,0]))
         
         cv2.ellipse(img, t((0,0)), (15,15), 0, 0, 360, (0,0,0), 1)
         cv2.line(img, t((0,10)), t((0,-10)), (0,0,0), 1 )
