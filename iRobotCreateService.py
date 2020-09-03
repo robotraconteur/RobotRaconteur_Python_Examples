@@ -227,14 +227,14 @@ def main():
     parser.add_argument("--serialport",type=str,default=serial_port_name,help="The serial port to use")
     parser.add_argument("--tcp-port",type=int,default=2354,help="The listen TCP port")
     parser.add_argument("--wait-signal",action='store_const',const=True,default=False)
-    args = parser.parse_args()
+    args, _ = parser.parse_known_args()
 
     #Initialize the object in the service
     obj=Create_impl()
 
     obj.Init(args.serialport)
     
-    with RR.ServerNodeSetup(args.nodename,args.tcp_port):
+    with RR.ServerNodeSetup(args.nodename,args.tcp_port,argv=sys.argv):
     
         #Register the service type and the service
         RRN.RegisterServiceTypeFromFile("experimental.create2")

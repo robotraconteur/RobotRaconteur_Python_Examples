@@ -187,7 +187,7 @@ def main():
     parser.add_argument("--nodename",type=str,default="experimental.createwebcam2.WebcamHost",help="The NodeName to use")
     parser.add_argument("--tcp-port",type=int,default=2355,help="The listen TCP port")
     parser.add_argument("--wait-signal",action='store_const',const=True,default=False)
-    args = parser.parse_args()
+    args, _ = parser.parse_known_args()
 
     #Initialize the webcam host root object
     camera_names=[(0,"Left"),(1,"Right")]
@@ -199,7 +199,7 @@ def main():
         
     obj=WebcamHost_impl(camera_names)
     
-    with RR.ServerNodeSetup(args.nodename,args.tcp_port):
+    with RR.ServerNodeSetup(args.nodename,args.tcp_port,argv=sys.argv):
 
         RRN.RegisterServiceTypeFromFile("experimental.createwebcam2")
         RRN.RegisterService("Webcam","experimental.createwebcam2.WebcamHost",obj)
