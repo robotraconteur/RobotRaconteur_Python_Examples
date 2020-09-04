@@ -30,11 +30,16 @@ def main():
 
     #Pull a frame from each camera, c1 and c2
     frame1=WebcamImageToMat(c1.CaptureFrame())
-    frame2=WebcamImageToMat(c2.CaptureFrame())
+    try:
+        frame2=WebcamImageToMat(c2.CaptureFrame())
+    except:
+        print("Warning: could not read some second camera")
+        frame2 = None
 
     #Show the images
     cv2.imshow(c1.Name,frame1)
-    cv2.imshow(c2.Name,frame2)
+    if frame2 is not None:
+        cv2.imshow(c2.Name,frame2)
 
     #CV wait for key press on the image window and then destroy
     cv2.waitKey()

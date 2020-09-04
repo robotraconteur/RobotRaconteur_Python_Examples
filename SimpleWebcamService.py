@@ -40,6 +40,12 @@ class Webcam_impl(object):
             self._capture.set(3,320)
             self._capture.set(4,240)
 
+            for _ in range(10):
+                try:
+                    self._capture.read()
+                except:
+                    pass
+
     #Return the camera name
     @property
     def Name(self):
